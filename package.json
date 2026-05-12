@@ -1,9 +1,15 @@
 {
-  "name": "javascript",
+  "name": "vulnerable-demo-app",
   "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
+  "private": true,
+  "description": "Intentionally vulnerable demo app for SAST testing",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
   "dependencies": {
+    "express": "4.16.0",
+    "sqlite3": "4.0.0",
     "hot-formula-parser": "^3.0.0",
     "lodash": "^4.17.20"
   }
