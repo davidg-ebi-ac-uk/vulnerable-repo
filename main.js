@@ -39,14 +39,42 @@ app.get("/ping", (req, res) => {
   });
 });
 
-// Vulnerability: unsafe eval
+// Safer calculator: structured operations only
 app.post("/calc", (req, res) => {
-  const expression = req.body.expression || "0";
+  const { op, a, b } = req.body || {};
+
+  if (typeof op !== "string") {
+    return res.status(400).json({ error: "op must be a string" });
+  }
+  if (typeof a !== "number" || Number.isNaN(a)) {
+    return res.status(400).json({ error: "a must be a valid number" });
+  }
+  if (typeof b !== "number" || Number.isNaN(b)) {
+    return res.status(400).json({ error: "b must be a valid number" });
+  }
+
   try {
-    if (!/^[\d+\-*/().\s]+$/.test(expression)) {
-      return res.status(400).json({ error: "Invalid expression" });
+    let result;
+    switch (op) {
+      case "add":
+        result = a + b;
+        break;
+      case "sub":
+        result = a - b;
+        break;
+      case "mul":
+        result = a * b;
+        break;
+      case "div":
+        if (b === 0) {
+          return res.status(400).json({ error: "division by zero" });
+        }
+        result = a / b;
+        break;
+      default:
+        return res.status(400).json({ error: "Unsupported op" });
     }
-    const result = Function(`"use strict"; return (${expression})`)();
+
     return res.json({ result });
   } catch (e) {
     return res.status(400).json({ error: e.message });
