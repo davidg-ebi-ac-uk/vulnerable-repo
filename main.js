@@ -43,7 +43,10 @@ app.get("/ping", (req, res) => {
 app.post("/calc", (req, res) => {
   const expression = req.body.expression || "0";
   try {
-    const result = eval(expression);
+    if (!/^[\d+\-*/().\s]+$/.test(expression)) {
+      return res.status(400).json({ error: "Invalid expression" });
+    }
+    const result = Function(`"use strict"; return (${expression})`)();
     return res.json({ result });
   } catch (e) {
     return res.status(400).json({ error: e.message });
